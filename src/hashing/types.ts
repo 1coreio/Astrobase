@@ -12,7 +12,7 @@ export type HashLike = ArrayLike<number> | ArrayBuffer | Hash;
 /**
  * A hash function implementation.
  *
- * @param payload The payload to perform the hash algorithm on.
- * @returns A promise that resolves with the output digest.
+ * @param data The data to compute hash from.
+ * @returns A promise that resolves with the computed hash bytes.
  */
-export type HashFn = (payload: BufferSource) => Promise<ArrayBuffer>;
+export type HashFn = (data: BufferSource) => Promise<ArrayBuffer>;

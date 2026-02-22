@@ -28,7 +28,7 @@ export async function validateHash(
 ) {
   testHash = new Hash(testHash);
   return compareBytes(
-    new Hash(testHash).value,
+    testHash.value,
     (await hash(instance, testHash.algorithm.value, payloadToBytes(content))).value,
   );
 }

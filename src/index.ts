@@ -19,6 +19,7 @@ export * from './events/events.js';
 export * from './file/index.js';
 export * from './fs/fs.client.js';
 export * from './hashing/index.js';
+export * from './hmac/index.js';
 export * from './http/http.client.js';
 export * from './http/http.server.js';
 export * from './identity/identity.js';

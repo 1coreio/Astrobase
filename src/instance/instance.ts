@@ -7,6 +7,7 @@ import type { ContentIdentifierSchemeParser } from '../cid/cid.js';
 import type { Codec } from '../codecs/codecs.js';
 import type { CryptModule } from '../crypt/index.js';
 import type { HashFn } from '../hashing/types.js';
+import type { HmacFn } from '../hmac/api.js';
 import type { KeyDerivationFn } from '../kdf/kdf.js';
 import type { Middleware } from '../middleware/types.js';
 import type { ProcedureExecutor } from '../rpc/server/server.js';
@@ -22,31 +23,33 @@ export interface InstanceConfig {
   clients?: any[];
 
   /** A dict of content type string keys & codec implementation values. */
-  codecs?: Partial<Record<string, Codec>>;
+  codecs?: { [K in string]?: Codec };
 
   /** A dict of encryption algorithm identifiers & their implementations. */
-  cryptAlgs?: Partial<Record<string, CryptModule>>;
+  cryptAlgs?: { [K in string]?: CryptModule };
 
   /** A dict of hashing algorithm identifiers & their implementations. */
-  hashAlgs?: Partial<Record<number, HashFn>>;
+  hashAlgs?: { [K in number]?: HashFn };
+
+  hmac?: { [K in string | number]?: HmacFn };
 
   /** A dict of key derivation function identifiers & their implementations. */
-  kdf?: Partial<Record<string, KeyDerivationFn>>;
+  kdf?: { [K in string]?: KeyDerivationFn };
 
   /** A set of middlewares. These instance level middlewares are ran for all codecs. */
   middlewares?: Middleware[];
 
   /** A dict of procedure name keys & procedure implementation values. */
-  procedures?: Partial<Record<string, ProcedureExecutor<any, any>>>;
+  procedures?: { [K in string]?: ProcedureExecutor<any, any> };
 
   /** A dict of content identifier scheme keys & scheme parser values. */
-  schemes?: Partial<Record<string, ContentIdentifierSchemeParser<unknown>>>;
+  schemes?: { [K in string]?: ContentIdentifierSchemeParser<unknown> };
 
   /** A dict of cryptographic signature algorithm identifiers & their implementations. */
-  sigAlgs?: Partial<Record<string, SignatureModule>>;
+  sigAlgs?: { [K in string]?: SignatureModule };
 
   /** A dict of wrap name keys & wrap implementation values. */
-  wraps?: Partial<Record<string, WrapModule<any, any>>>;
+  wraps?: { [K in string]?: WrapModule<any, any> };
 }
 
 /** A fully configured instance configuration. */
@@ -60,6 +63,7 @@ export const dicts = [
   'codecs',
   'cryptAlgs',
   'hashAlgs',
+  'hmac',
   'kdf',
   'procedures',
   'schemes',

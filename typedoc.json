@@ -18,6 +18,7 @@
     "./src/file/index.ts",
     "./src/fs/fs.client.ts",
     "./src/hashing/index.ts",
+    "./src/hmac/index.ts",
     "./src/http/http.client.ts",
     "./src/http/http.server.ts",
     "./src/identity/identity.ts",

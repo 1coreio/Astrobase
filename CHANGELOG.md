@@ -84,6 +84,10 @@
 
 - Added `WithEcdsaWrap` to use with `createInstance`.
 
+#### HMAC
+
+- Added HMAC API.
+
 #### KDF
 
 - Added modules `@astrobase/sdk/kdf/node` & `@astrobase/sdk/kdf/web-crypto`.

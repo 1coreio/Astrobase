@@ -96,6 +96,10 @@
       "types": "./dist/hashing/index.d.ts",
       "default": "./dist/hashing/index.js"
     },
+    "./hmac": {
+      "types": "./dist/hmac/index.d.ts",
+      "default": "./dist/hmac/index.js"
+    },
     "./http/client": {
       "types": "./dist/http/http.client.d.ts",
       "default": "./dist/http/http.client.js"
