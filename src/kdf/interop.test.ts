@@ -1,23 +1,42 @@
 import { randomBytes } from 'node:crypto';
-import { expect, test } from 'vitest';
-import { CRYPT_DEFAULTS } from '../crypt/defaults.js';
+import { describe, expect, test } from 'vitest';
 import { createInstance } from '../instance/instance.js';
 import type { KeyDerivationContext } from './kdf.js';
 import { NodeKDF } from './node.js';
 import { WebCryptoKDF } from './web-crypto.js';
 
-test('KDF: Node & WebCrypto interop', async () => {
-  const options: KeyDerivationContext = {
-    ...CRYPT_DEFAULTS,
+describe('KDF: Node & WebCrypto interop', () => {
+  const baseOptions = {
+    hashAlg: 'SHA-256',
     input: new Uint8Array(randomBytes(32)),
     instance: createInstance(),
+    keyLen: 32,
     salt: new Uint8Array(randomBytes(16)),
   };
 
-  const [nodeResult, webCryptoResult] = await Promise.all([
-    NodeKDF.PBKDF2(options),
-    WebCryptoKDF.PBKDF2(options),
-  ]);
+  test('HKDF', async () => {
+    const options: KeyDerivationContext = {
+      ...baseOptions,
+      info: new Uint8Array(randomBytes(16)),
+      kdf: 'HKDF',
+    };
 
-  expect(nodeResult).toEqual(webCryptoResult);
+    const nodeResult = NodeKDF.HKDF(options);
+    const webCryptoResult = await WebCryptoKDF.HKDF(options);
+
+    expect(nodeResult).toEqual(webCryptoResult);
+  });
+
+  test('PBKDF', async () => {
+    const options: KeyDerivationContext = {
+      ...baseOptions,
+      iterations: 10000,
+      kdf: 'PBKDF2',
+    };
+
+    const nodeResult = NodeKDF.PBKDF2(options);
+    const webCryptoResult = await WebCryptoKDF.PBKDF2(options);
+
+    expect(nodeResult).toEqual(webCryptoResult);
+  });
 });

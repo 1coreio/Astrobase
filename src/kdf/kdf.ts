@@ -1,4 +1,4 @@
-import { getPrivateKey, type GetPrivateKeyOptions } from '../identity/identity.js';
+import { getPrivateKey, type GetPrivateKeyOptions } from '../identity/bip44-derivation.js';
 import { getOrThrow, type Instance } from '../instance/instance.js';
 import type { MaybePromise } from '../internal/maybe-promise.js';
 
@@ -6,11 +6,14 @@ export interface KeyDerivationOptions extends Partial<GetPrivateKeyOptions> {
   /** The hashing algorithm used for key derivation. */
   hashAlg: string;
 
+  /** Contextual information for supported algorithms, like HKDF. */
+  info?: Uint8Array<ArrayBuffer>;
+
   /** The instance configuration. */
   instance: Instance;
 
-  /** The number of iterations for key derivation. */
-  iterations: number;
+  /** The number of iterations for supported algorithms, like PBKDF2. */
+  iterations?: number;
 
   /** The key derivation function identifier. */
   kdf: string;
@@ -84,7 +87,7 @@ export async function deriveKey({
 
 export interface KeyDerivationContext extends Omit<
   KeyDerivationOptions,
-  'lookaheadLimit' | 'passphrase' | 'publicKey'
+  'key' | 'lookaheadLimit' | 'passphrase' | 'publicKey'
 > {
   /** The key derivation input material. */
   input: Uint8Array<ArrayBuffer>;

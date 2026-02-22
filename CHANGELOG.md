@@ -92,6 +92,7 @@
 
 - Added modules `@astrobase/sdk/kdf/node` & `@astrobase/sdk/kdf/web-crypto`.
 - Added support for using a raw input material for KDF.
+- Added support for HKDF.
 
 #### Signatures
 

@@ -6,33 +6,49 @@
  */
 
 import type { InstanceConfig } from '../instance/instance.js';
-import type { KeyDerivationFn } from '../kdf/kdf.js';
+import type { KeyDerivationContext, KeyDerivationFn } from '../kdf/kdf.js';
 
-export const WebCryptoKDFs = [
-  'PBKDF2',
-  // 'scrypt', // TODO(feat): add support
-  // 'HKDF' // TODO(feat): add support
-] as const;
+export const WebCryptoKDFs = ['HKDF', 'PBKDF2'] as const;
 
 export type WebCryptoKDF = (typeof WebCryptoKDFs)[number];
 
 /** A {@link KeyDerivationFn} using the WebCrypto API for supported algorithms. */
-export const WebCryptoKdfFn: KeyDerivationFn = async ({ kdf, ...options }) =>
-  new Uint8Array(
+export const WebCryptoKdfFn = (async ({
+  input,
+  kdf,
+  keyLen,
+  salt,
+  ...options
+}: Omit<KeyDerivationContext, 'instance'>) => {
+  if (!WebCryptoKDFs.includes(kdf as never)) {
+    throw new Error(`Unsupported KDF '${kdf}'`);
+  }
+  const mustInclude = kdf === 'HKDF' ? 'info' : 'iterations';
+  const mustOmit = kdf === 'HKDF' ? 'iterations' : 'info';
+  if (!options[mustInclude]) {
+    throw new TypeError(`Missing '${mustInclude}' parameter for ${kdf}`);
+  }
+  if (options[mustOmit]) {
+    throw new TypeError(`'${mustOmit}' parameter not supported for ${kdf}`);
+  }
+  return new Uint8Array(
     await crypto.subtle.deriveBits(
       {
         name: kdf,
         hash: options.hashAlg,
+        info: options.info,
         iterations: options.iterations,
-        salt: options.salt,
+        salt,
       },
-      await crypto.subtle.importKey('raw', options.input, kdf, false, ['deriveBits']),
-      options.keyLen * 8,
+      await crypto.subtle.importKey('raw', input, kdf, false, ['deriveBits']),
+      keyLen * 8,
     ),
   );
+}) satisfies KeyDerivationFn;
 
-export const WebCryptoKDF: Record<WebCryptoKDF, KeyDerivationFn> = {
+export const WebCryptoKDF = {
   PBKDF2: WebCryptoKdfFn,
-};
+  HKDF: WebCryptoKdfFn,
+} satisfies Record<WebCryptoKDF, KeyDerivationFn>;
 
 export const WithWebCryptoKDF = { kdf: WebCryptoKDF } satisfies InstanceConfig;
