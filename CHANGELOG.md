@@ -48,6 +48,21 @@
 
 - The identity scheme now uses and expects a `sig` type wrap including a valid signature, instead of
   an `ECDSA` type wrap.
+- Changed the identity derivation method. With the new method, `getPrivateKey` requires the public
+  key to be cached with the identity ID by calling `getIdentity` at least once. The old method has
+  been deprecated and moved to `@astrobase/sdk/identity/bip44` for users to migrate old identities.
+  The `lookaheadLimit` value is no longer supported and locked to 20. Some things like encryption
+  and signatures will no longer work - you'll need to override their `getPrivateKey` function by
+  adding to your instance:
+
+  ```js
+  import { getPrivateKeyBIP44 } from '@astrobase/sdk/identity/bip44';
+
+  const instance = createInstance(
+    // ... your configs
+    { functions: { getPrivateKey: getPrivateKeyBIP44 } },
+  );
+  ```
 
 #### Instance
 

@@ -17,20 +17,23 @@ export const WebCryptoKdfFn = (async ({
   input,
   kdf,
   keyLen,
-  salt,
   ...options
 }: Omit<KeyDerivationContext, 'instance'>) => {
   if (!WebCryptoKDFs.includes(kdf as never)) {
     throw new Error(`Unsupported KDF '${kdf}'`);
   }
-  const mustInclude = kdf === 'HKDF' ? 'info' : 'iterations';
-  const mustOmit = kdf === 'HKDF' ? 'iterations' : 'info';
-  if (!options[mustInclude]) {
-    throw new TypeError(`Missing '${mustInclude}' parameter for ${kdf}`);
+
+  for (const param of kdf === 'HKDF' ? (['info'] as const) : (['iterations', 'salt'] as const)) {
+    if (!options[param]) {
+      throw new TypeError(`Missing '${param}' parameter for ${kdf}`);
+    }
   }
+
+  const mustOmit = kdf === 'HKDF' ? 'iterations' : 'info';
   if (options[mustOmit]) {
     throw new TypeError(`'${mustOmit}' parameter not supported for ${kdf}`);
   }
+
   return new Uint8Array(
     await crypto.subtle.deriveBits(
       {
@@ -38,7 +41,7 @@ export const WebCryptoKdfFn = (async ({
         hash: options.hashAlg,
         info: options.info,
         iterations: options.iterations,
-        salt,
+        salt: options.salt ?? new Uint8Array(),
       },
       await crypto.subtle.importKey('raw', input, kdf, false, ['deriveBits']),
       keyLen * 8,

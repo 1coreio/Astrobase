@@ -15,28 +15,36 @@ export type NodeKDF = (typeof NodeKDFs)[number];
 
 /** A {@link KeyDerivationFn} using the `node:crypto` implementation of `PBKDF2`. */
 export const NodePBKDF2 = ((options: Omit<KeyDerivationContext, 'instance' | 'kdf'>) => {
-  if (!options.iterations) {
-    throw new TypeError(`Missing 'iterations' parameter for 'PBKDF2'`);
+  for (const param of ['iterations', 'salt'] as const) {
+    if (!options[param]) {
+      throw new TypeError(`Missing '${param}' parameter for 'PBKDF2'`);
+    }
   }
   if (options.info) {
     throw new TypeError(`'info' parameter not supported for 'PBKDF2'`);
   }
   return new Uint8Array(
-    pbkdf2Sync(options.input, options.salt, options.iterations, options.keyLen, options.hashAlg),
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    pbkdf2Sync(options.input, options.salt!, options.iterations!, options.keyLen, options.hashAlg),
   );
 }) satisfies KeyDerivationFn;
 
 /** A {@link KeyDerivationFn} using the `node:crypto` implementation of `HKDF`. */
-export const NodeHKDF = ((options: Omit<KeyDerivationContext, 'instance' | 'kdf'>) => {
-  if (!options.info) {
+export const NodeHKDF = (({
+  hashAlg,
+  info,
+  input,
+  iterations,
+  keyLen,
+  salt,
+}: Omit<KeyDerivationContext, 'instance' | 'kdf'>) => {
+  if (!info) {
     throw new TypeError(`Missing 'info' parameter for 'HKDF'`);
   }
-  if (options.iterations) {
+  if (iterations) {
     throw new TypeError(`'iterations' parameter not supported for 'HKDF'`);
   }
-  return new Uint8Array(
-    hkdfSync(options.hashAlg, options.input, options.salt, options.info, options.keyLen),
-  );
+  return new Uint8Array(hkdfSync(hashAlg, input, salt ?? new Uint8Array(), info, keyLen));
 }) satisfies KeyDerivationFn;
 
 export const NodeKDF = {

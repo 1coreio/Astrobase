@@ -109,8 +109,12 @@
       "default": "./dist/http/http.server.js"
     },
     "./identity": {
-      "types": "./dist/identity/identity.d.ts",
-      "default": "./dist/identity/identity.js"
+      "types": "./dist/identity/index.d.ts",
+      "default": "./dist/identity/index.js"
+    },
+    "./identity/bip44": {
+      "types": "./dist/identity/bip44-derivation.d.ts",
+      "default": "./dist/identity/bip44-derivation.js"
     },
     "./immutable": {
       "types": "./dist/immutable/index.d.ts",

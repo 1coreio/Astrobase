@@ -1,8 +1,8 @@
-import { getPrivateKey, type GetPrivateKeyOptions } from '../identity/bip44-derivation.js';
+import { getPrivateKeyViaInstance } from '../identity/get-private-key.js';
 import { getOrThrow, type Instance } from '../instance/instance.js';
 import type { MaybePromise } from '../internal/maybe-promise.js';
 
-export interface KeyDerivationOptions extends Partial<GetPrivateKeyOptions> {
+export interface KeyDerivationOptions {
   /** The hashing algorithm used for key derivation. */
   hashAlg: string;
 
@@ -37,7 +37,7 @@ export interface KeyDerivationOptions extends Partial<GetPrivateKeyOptions> {
   publicKey?: Uint8Array<ArrayBuffer>;
 
   /** The key derivation salt. */
-  salt: Uint8Array<ArrayBuffer>;
+  salt?: Uint8Array<ArrayBuffer>;
 }
 
 /**
@@ -50,13 +50,7 @@ export interface KeyDerivationOptions extends Partial<GetPrivateKeyOptions> {
  * @param options The key derivation options.
  * @returns The derived key bytes as a promise.
  */
-export async function deriveKey({
-  key,
-  lookaheadLimit,
-  passphrase,
-  publicKey,
-  ...options
-}: KeyDerivationOptions) {
+export async function deriveKey({ key, passphrase, publicKey, ...options }: KeyDerivationOptions) {
   let found = false;
 
   for (const input of [key, passphrase, publicKey]) {
@@ -73,9 +67,8 @@ export async function deriveKey({
   } else if (passphrase) {
     input = new TextEncoder().encode(passphrase);
   } else if (publicKey) {
-    input = getPrivateKey({
+    input = await getPrivateKeyViaInstance({
       instance: options.instance,
-      lookaheadLimit,
       publicKey,
     });
   } else {
@@ -87,7 +80,7 @@ export async function deriveKey({
 
 export interface KeyDerivationContext extends Omit<
   KeyDerivationOptions,
-  'key' | 'lookaheadLimit' | 'passphrase' | 'publicKey'
+  'key' | 'passphrase' | 'publicKey'
 > {
   /** The key derivation input material. */
   input: Uint8Array<ArrayBuffer>;

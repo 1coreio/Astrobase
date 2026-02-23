@@ -1,5 +1,5 @@
 import { hash } from '../hashing/utils.js';
-import { getPrivateKey } from '../identity/identity.js';
+import { getPrivateKeyViaInstance } from '../identity/get-private-key.js';
 import { getOrThrow, type Instance } from '../instance/instance.js';
 
 /** Options for {@link sign}. */
@@ -31,7 +31,7 @@ export const sign = async ({
 }: SignOptions): Promise<Uint8Array<ArrayBuffer>> =>
   await getOrThrow(instance, 'sigAlgs', sigAlg).sign({
     instance,
-    key: getPrivateKey({ instance, publicKey }),
+    key: await getPrivateKeyViaInstance({ instance, publicKey }),
     messageHash: new Uint8Array((await hash(instance, hashAlg, message)).value),
     sigAlg,
   });

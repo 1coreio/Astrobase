@@ -2,7 +2,7 @@ import { randomBytes } from 'node:crypto';
 import { assert, beforeAll, describe, expect, it } from 'vitest';
 import { ContentIdentifier } from '../cid/cid.js';
 import { SHA_256 } from '../hashing/index.js';
-import { putIdentity } from '../identity/identity.js';
+import { putIdentity } from '../identity/derivation.js';
 import { createInstance, type Instance } from '../instance/instance.js';
 import { createInstanceWithLoadedKeyring } from '../keyrings/testing/utils.js';
 import { WithECDSA } from './ecdsa.js';
@@ -38,7 +38,7 @@ describe('`sig` type wraps', () => {
           ],
           payload,
         }),
-      ).rejects.toThrow('Private key unavailable'));
+      ).rejects.toThrow('Identity ID unavailable for public key'));
 
     it('Wraps & unwraps', async () => {
       const identityCID = await putIdentity({

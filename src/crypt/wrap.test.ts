@@ -1,7 +1,7 @@
 import { randomBytes } from 'crypto';
 import { describe, expect, it, test } from 'vitest';
 import { ContentIdentifier } from '../cid/cid.js';
-import { putIdentity } from '../identity/identity.js';
+import { putIdentity } from '../identity/derivation.js';
 import { createInstance } from '../instance/instance.js';
 import { WithWebCryptoKDF } from '../kdf/web-crypto.js';
 import { createInstanceWithLoadedKeyring } from '../keyrings/testing/utils.js';
@@ -105,7 +105,7 @@ describe('Encrypt Wrap', () => {
           metadata: randomPubKeyMetadata,
           payload: randomPayload,
         }),
-      ).rejects.toThrow('Private key unavailable');
+      ).rejects.toThrow('Identity ID unavailable for public key');
     });
 
     it('Works if known public key provided', async () => {
@@ -117,7 +117,7 @@ describe('Encrypt Wrap', () => {
         ref: new ContentIdentifier('test', [1, 2, 3]),
       });
 
-      const publicKey = new Uint8Array(identityCID!.value);
+      const publicKey = new Uint8Array(identityCID.value);
       const metadata = Crypt.cryptOptions({ publicKey });
 
       const { metadata: wrappedMetadata, payload: wrappedPayload } = await wrap({

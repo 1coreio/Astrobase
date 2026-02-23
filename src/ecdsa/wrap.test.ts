@@ -3,7 +3,7 @@ import { assert, beforeAll, describe, expect, it } from 'vitest';
 import { ContentIdentifier } from '../cid/cid.js';
 import { FileBuilder } from '../file/file-builder.js';
 import { SHA_256 } from '../hashing/index.js';
-import { putIdentity } from '../identity/identity.js';
+import { putIdentity } from '../identity/derivation.js';
 import type { Instance } from '../instance/instance.js';
 import { createInstanceWithLoadedKeyring } from '../keyrings/testing/utils.js';
 import { sign } from '../signatures/api.js';

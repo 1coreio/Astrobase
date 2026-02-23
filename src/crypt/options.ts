@@ -37,7 +37,7 @@ export const cryptOptions = (partialOptions: Partial<CryptOptions>): CryptOption
  * {@link CryptOptions} without sensitive data. Suitable for storing alongside the encrypted payload
  * for future decryption.
  */
-export type CryptOptionsSanitized = Omit<CryptOptions, 'key' | 'lookaheadLimit' | 'passphrase'>;
+export type CryptOptionsSanitized = Omit<CryptOptions, 'key' | 'passphrase'>;
 
 /**
  * @param options The {@link CryptOptions} object to sanitize.
@@ -46,6 +46,6 @@ export type CryptOptionsSanitized = Omit<CryptOptions, 'key' | 'lookaheadLimit' 
  */
 export function sanitizeCryptOptions(options: CryptOptions): CryptOptionsSanitized {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { key, lookaheadLimit, passphrase, ...sanitized } = options;
+  const { key, passphrase, ...sanitized } = options;
   return sanitized;
 }

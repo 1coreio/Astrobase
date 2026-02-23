@@ -8,6 +8,7 @@ import type { Codec } from '../codecs/codecs.js';
 import type { CryptModule } from '../crypt/index.js';
 import type { HashFn } from '../hashing/types.js';
 import type { HmacFn } from '../hmac/api.js';
+import type { GetPrivateKeyFn } from '../identity/get-private-key.js';
 import type { KeyDerivationFn } from '../kdf/kdf.js';
 import type { Middleware } from '../middleware/types.js';
 import type { ProcedureExecutor } from '../rpc/server/server.js';
@@ -27,6 +28,9 @@ export interface InstanceConfig {
 
   /** A dict of encryption algorithm identifiers & their implementations. */
   cryptAlgs?: { [K in string]?: CryptModule };
+
+  /** @deprecated */
+  functions?: { getPrivateKey?: GetPrivateKeyFn };
 
   /** A dict of hashing algorithm identifiers & their implementations. */
   hashAlgs?: { [K in number]?: HashFn };
@@ -62,6 +66,7 @@ export type InstanceFeature = keyof InstanceConfig;
 export const dicts = [
   'codecs',
   'cryptAlgs',
+  'functions',
   'hashAlgs',
   'hmac',
   'kdf',
