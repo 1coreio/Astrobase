@@ -23,9 +23,11 @@ export const WebCryptoKdfFn = (async ({
     throw new Error(`Unsupported KDF '${kdf}'`);
   }
 
-  for (const param of kdf === 'HKDF' ? (['info'] as const) : (['iterations', 'salt'] as const)) {
-    if (!options[param]) {
-      throw new TypeError(`Missing '${param}' parameter for ${kdf}`);
+  if (kdf === 'PBKDF') {
+    for (const param of ['iterations', 'salt'] as const) {
+      if (!options[param]) {
+        throw new TypeError(`Missing '${param}' parameter for ${kdf}`);
+      }
     }
   }
 
@@ -39,7 +41,7 @@ export const WebCryptoKdfFn = (async ({
       {
         name: kdf,
         hash: options.hashAlg,
-        info: options.info,
+        info: options.info ?? new Uint8Array(),
         iterations: options.iterations,
         salt: options.salt ?? new Uint8Array(),
       },

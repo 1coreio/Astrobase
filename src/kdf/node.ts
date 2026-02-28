@@ -38,13 +38,12 @@ export const NodeHKDF = (({
   keyLen,
   salt,
 }: Omit<KeyDerivationContext, 'instance' | 'kdf'>) => {
-  if (!info) {
-    throw new TypeError(`Missing 'info' parameter for 'HKDF'`);
-  }
   if (iterations) {
     throw new TypeError(`'iterations' parameter not supported for 'HKDF'`);
   }
-  return new Uint8Array(hkdfSync(hashAlg, input, salt ?? new Uint8Array(), info, keyLen));
+  return new Uint8Array(
+    hkdfSync(hashAlg, input, salt ?? new Uint8Array(), info ?? new Uint8Array(), keyLen),
+  );
 }) satisfies KeyDerivationFn;
 
 export const NodeKDF = {
